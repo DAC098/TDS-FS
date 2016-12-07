@@ -1,6 +1,6 @@
 var SettingsManager = require('./SettingsManager/index.js')('./settings.json');
 
-let temp = SettingsManager.get('http.host');
+let temp = SettingsManager.getKey('http.host');
 
 console.log('temp:',temp);
 

@@ -28,35 +28,31 @@ function SettingsManager(defaults) {
 
 	var current_settings = {};
 
-	function _setClassVariables(class_ref,obj_ref,key_array = []) {
+	function _setClassVariables(class_ref,obj_ref) {
 		for(let key in obj_ref) {
-			key_array.push(key);
 			console.log('key:',key);
-			console.log('array:',key_array);
 			if(getType(obj_ref[key]) == 'object' && Object.keys(obj_ref[key]).length !== 0) {
-				// _setKeyPair(class_ref,obj_ref,[key]);
 				class_ref[key] = {};
-				_setClassVariables(class_ref[key],obj_ref[key],[]);
+				_setClassVariables(class_ref,obj_ref);
+				Object.defineProperty(class_ref,key,{
+					writable: false,
+					configurable: false,
+					enumerable: true
+				});
 			} else {
-				_setKeyPair(class_ref,obj_ref,[key]);
+				Object.defineProperty(class_ref,key,{
+					get: function() {
+						return obj_ref[key];
+					},
+					set: function() {},
+					configurable: false,
+					enumerable: true
+				});
 			}
-			key_array.pop();
 		}
 	}
 
-	function _setKeyPair(class_ref,obj_ref,key_array) {
-		let key = key_array[key_array.length - 1];
-		Object.defineProperty(class_ref,key,{
-			get: function() {
-				return _getKey(key_array,obj_ref);
-			},
-			set: function(variable) {},
-			enumerable: true
-		});
-	}
-
 	function _getKey(string_array,obj_ref,pos = 0) {
-		console.log('string_array:',string_array);
 		let ref = Object.assign({},obj_ref);
 		let c = 0,
 			found = true;
@@ -89,11 +85,11 @@ function SettingsManager(defaults) {
 		return string.split(/\.|\s/g);
 	}
 
-	this.get = function get(key_string) {
+	this.getKey = function getKey(key_string) {
 		return _getKey(_parseKeyString(key_string),current_settings);
 	};
 
-	this.set = function set(key_string,variable) {
+	this.setKey = function setKey(key_string,variable) {
 
 	};
 
