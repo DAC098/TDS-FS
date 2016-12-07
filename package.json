@@ -1,0 +1,50 @@
+{
+  "name": "TDS-FS",
+  "version": "1.0.0",
+  "description": "a file server using NodeJS",
+  "main": "./server/main.js",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "chokidar": "^1.6.1",
+    "classnames": "^2.2.5",
+    "co": "^4.6.0",
+    "connect-mongodb-session": "^1.3.0",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "express-session": "^1.14.1",
+    "mongodb": "^2.2.11",
+    "pump": "^1.0.1",
+    "react": "^15.3.0",
+    "react-dom": "^15.3.0",
+    "socket.io": "^1.4.8",
+    "socket.io-client": "^1.4.8"
+  },
+  "devDependencies": {
+    "babel-preset-react": "^6.11.1",
+    "eslint": "^3.9.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-cli": "^1.2.2",
+    "gulp-less": "^3.1.0",
+    "gulp-util": "^3.0.7",
+    "gulp-watch": "^4.3.9",
+    "mocha": "^3.0.2",
+    "webpack": "github:webpack/webpack#v2.1.0-beta.27",
+    "webpack-stream": "^3.2.0"
+  },
+  "scripts": {
+    "start": "node ./server/server.js",
+    "gulp": "./node_modules/.bin/gulp",
+    "gulp-webpack": "./node_modules/.bin/gulp webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DAC098/TDS-FS.git"
+  },
+  "author": "David Cathers",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DAC098/TDS-FS/issues"
+  },
+  "homepage": "https://github.com/DAC098/TDS-FS#readme"
+}
