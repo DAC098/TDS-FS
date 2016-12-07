@@ -1,5 +1,5 @@
-# TDS CDN
-this is a custom CDN server using [Nodejs](https://nodejs.org/en/).
+# TDS FS
+this is a custom file server using [Nodejs](https://nodejs.org/en/).
 
 ### Backend
 - [Express](https://expressjs.com/)
