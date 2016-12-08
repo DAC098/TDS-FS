@@ -9,13 +9,11 @@ const co = require('co');
 // app modules
 const {cookieParser,session} = require('./session.js');
 const fsm = require('./fsm.js');
-
-// json files
-const {root} = require('../settings.json');
+const pageMan = require('./pageMan.js');
 
 // log methods
-const log = require('./logging.js').makeLog('cout',{name:'socket'});
-const error = require('./logging.js').makeLog('cout',{name:'socket',prefix:'ERROR'});
+const log = logger.makeLog('cout',{name:'socket'});
+const error = logger.makeLog('cout',{name:'socket',prefix:'ERROR'});
 
 // ----------------------------------------------------------------------------
 exports.connect = function connect(server) {
@@ -58,6 +56,14 @@ mse.on('connection',(socket) => {
 		log(`client disconnect
 	username:       ${socket.handshake.session.username}
 	connections:    ${total_connections}`);
+	});
+
+	pageMan.once('update',(name) => {
+		log('sending update to socket');
+		let data = {
+			page: path.basename(name)
+		};
+		socket.emit('update',{opp:'server',type:'page-update',data});
 	});
 
 // ----------------------------------------------------------------------------
