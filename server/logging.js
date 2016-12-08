@@ -19,7 +19,10 @@ try {
 	}
 }
 
-const stdout = fs.createWriteStream(file_path+'.log',{flag:'a'});
+var stdout = {};
+
+if(process.env.NODE_ENV == 'development')
+	stdout = fs.createWriteStream(file_path+'.log',{flag:'a'});
 
 function cout(log,cpu,date,args) {
 	let idn = log.name.length !== 0 ? `:${log.name}` : '';
@@ -28,9 +31,9 @@ function cout(log,cpu,date,args) {
 	return true;
 }
 
-Logger.makeStream('cout',cout);
+Logger.makeStream('cout',{production:false},cout);
 
-Logger.makePreStream('cout',function(log,cpu,date,args) {
+Logger.makePreStream('cout',{production:false},function(log,cpu,date,args) {
 	let idn = log.name.length !== 0 ? `:${log.name}` : '';
 	args.unshift(`[${this.today()}T${this.dTime()}${idn}]${log.prefix}:`);
 	stdout.write(`${util.format.apply(null,args)}\n`);
