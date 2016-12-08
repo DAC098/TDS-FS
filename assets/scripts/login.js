@@ -1,12 +1,12 @@
 webpackJsonp([1],{
 
-/***/ 116:
+/***/ 114:
 /***/ function(module, exports, __webpack_require__) {
 
 var React = __webpack_require__(8);
 
-var log = __webpack_require__(32).makeLog('Login');
-var { sendJSON } = __webpack_require__(43);
+var log = __webpack_require__(42).makeLog('Login');
+var { sendJSON } = __webpack_require__(116);
 
 var Login = React.createClass({
     displayName: 'Login',
@@ -136,7 +136,30 @@ module.exports = Login;
 
 /***/ },
 
-/***/ 20:
+/***/ 116:
+/***/ function(module, exports) {
+
+exports.sendJSON = function sendJSON(url,obj) {
+	let base_url = window.location.origin + url;
+	return new Promise(function(resolve,reject) {
+		let xhr = new XMLHttpRequest();
+		xhr.open('post',base_url,true);
+		xhr.setRequestHeader('Content-type','application/json');
+		xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
+		xhr.onreadystatechange = () => {
+			if(xhr.readyState === XMLHttpRequest.DONE) {
+				let {status,response} = xhr;
+				resolve({status,response});
+			}
+		};
+		xhr.send(JSON.stringify(obj));
+	});
+};
+
+
+/***/ },
+
+/***/ 21:
 /***/ function(module, exports) {
 
 function getType(variable) {
@@ -242,17 +265,17 @@ exports.splitPath = function splitPath(str) {
 var React = __webpack_require__(8);
 var {render} = __webpack_require__(25);
 
-var Login = __webpack_require__(116);
+var Login = __webpack_require__(114);
 
 render(React.createElement(Login),document.getElementById('render'));
 
 
 /***/ },
 
-/***/ 32:
+/***/ 42:
 /***/ function(module, exports, __webpack_require__) {
 
-var {padStart} = __webpack_require__(20);
+var {padStart} = __webpack_require__(21);
 
 function CLogs() {
 
@@ -329,29 +352,6 @@ function CLogs() {
 var exp = new CLogs();
 
 module.exports = exp;
-
-
-/***/ },
-
-/***/ 43:
-/***/ function(module, exports) {
-
-exports.sendJSON = function sendJSON(url,obj) {
-	let base_url = window.location.origin + url;
-	return new Promise(function(resolve,reject) {
-		let xhr = new XMLHttpRequest();
-		xhr.open('post',base_url,true);
-		xhr.setRequestHeader('Content-type','application/json');
-		xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
-		xhr.onreadystatechange = () => {
-			if(xhr.readyState === XMLHttpRequest.DONE) {
-				let {status,response} = xhr;
-				resolve({status,response});
-			}
-		};
-		xhr.send(JSON.stringify(obj));
-	});
-};
 
 
 /***/ }

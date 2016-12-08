@@ -216,7 +216,8 @@ function localstorage(){
 /* 17 */,
 /* 18 */,
 /* 19 */,
-/* 20 */
+/* 20 */,
+/* 21 */
 /***/ function(module, exports) {
 
 function getType(variable) {
@@ -315,7 +316,6 @@ exports.splitPath = function splitPath(str) {
 
 
 /***/ },
-/* 21 */,
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -942,89 +942,6 @@ exports.decodePayloadAsBinary = function (data, binaryType, callback) {
 /* 30 */,
 /* 31 */,
 /* 32 */
-/***/ function(module, exports, __webpack_require__) {
-
-var {padStart} = __webpack_require__(20);
-
-function CLogs() {
-
-	var self = this;
-
-	var timers = {};
-
-	var NAME_NOT_FOUND  = 'name not found in timers';
-	var NAME_TYPE_INVALID = 'name needs to be of type string';
-
-	function checkName(name) {
-		if(typeof name !== 'string') throw new TypeError(NAME_TYPE_INVALID);
-		if(!(name in timers)) throw new RangeError(NAME_NOT_FOUND);
-	};
-
-	this.now = function now() {
-		let now = performance.now();
-		let ms = Math.floor(now % 1000);
-		let sec = Math.floor(now / 1000 % 60);
-		let min = Math.floor(now / 1000 / 60 % 60);
-		let hr = Math.floor(now / 1000 / 60 / 60 % 60);
-		return `${padStart(hr,2,'0')}:${padStart(min,2,'0')}:${padStart(sec,2,'0')}.${padStart(ms,3,'0')}`;
-	};
-
-	this.makeLog = function makeLog(obj = {}) {
-		let name = obj.name || '';
-		let prefix = obj.prefix || '';
-		let enabled = typeof obj.enabled === 'boolean' ? obj.enabled : true;
-		return (...args) => {
-			if(enabled) {
-				var idn = name.length > 0 ? `-${name}` : '';
-				args.unshift(`[${this.now()}${idn}]${prefix}:`);
-				console.log.apply(null,args);
-			}
-		};
-	};
-
-	this.tStart = function tStart(name) {
-		if(typeof name !== 'string') throw new TypeError(NAME_TYPE_INVALID);
-		timers[name] = {
-			start: performance.now(),
-			diff: 0
-		};
-	};
-
-	this.tStop = function tStop(name) {
-		checkName(name);
-		var now = performance.now();
-		timers[name].diff = now - timers[name].start;
-		return timers[name].diff;
-	};
-
-	this.tCurrent = function tCurrent(name) {
-		checkName(name);
-		var now = performance.now();
-		return now - timers[name].start;
-	};
-
-	this.tGet = function tGet(name) {
-		checkName(name);
-		return timers[name];
-	};
-
-	this.tClear = function tClear(name) {
-		checkName(name);
-		timers[name] = {
-			start: 0,
-			diff: 0
-		};
-	};
-
-}
-
-var exp = new CLogs();
-
-module.exports = exp;
-
-
-/***/ },
-/* 33 */
 /***/ function(module, exports) {
 
 
@@ -1194,7 +1111,7 @@ Emitter.prototype.hasListeners = function(event){
 
 
 /***/ },
-/* 34 */
+/* 33 */
 /***/ function(module, exports) {
 
 
@@ -1206,6 +1123,7 @@ module.exports = function(a, b){
 };
 
 /***/ },
+/* 34 */,
 /* 35 */,
 /* 36 */,
 /* 37 */,
@@ -1213,30 +1131,90 @@ module.exports = function(a, b){
 /* 39 */,
 /* 40 */,
 /* 41 */,
-/* 42 */,
-/* 43 */
-/***/ function(module, exports) {
+/* 42 */
+/***/ function(module, exports, __webpack_require__) {
 
-exports.sendJSON = function sendJSON(url,obj) {
-	let base_url = window.location.origin + url;
-	return new Promise(function(resolve,reject) {
-		let xhr = new XMLHttpRequest();
-		xhr.open('post',base_url,true);
-		xhr.setRequestHeader('Content-type','application/json');
-		xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
-		xhr.onreadystatechange = () => {
-			if(xhr.readyState === XMLHttpRequest.DONE) {
-				let {status,response} = xhr;
-				resolve({status,response});
+var {padStart} = __webpack_require__(21);
+
+function CLogs() {
+
+	var self = this;
+
+	var timers = {};
+
+	var NAME_NOT_FOUND  = 'name not found in timers';
+	var NAME_TYPE_INVALID = 'name needs to be of type string';
+
+	function checkName(name) {
+		if(typeof name !== 'string') throw new TypeError(NAME_TYPE_INVALID);
+		if(!(name in timers)) throw new RangeError(NAME_NOT_FOUND);
+	};
+
+	this.now = function now() {
+		let now = performance.now();
+		let ms = Math.floor(now % 1000);
+		let sec = Math.floor(now / 1000 % 60);
+		let min = Math.floor(now / 1000 / 60 % 60);
+		let hr = Math.floor(now / 1000 / 60 / 60 % 60);
+		return `${padStart(hr,2,'0')}:${padStart(min,2,'0')}:${padStart(sec,2,'0')}.${padStart(ms,3,'0')}`;
+	};
+
+	this.makeLog = function makeLog(obj = {}) {
+		let name = obj.name || '';
+		let prefix = obj.prefix || '';
+		let enabled = typeof obj.enabled === 'boolean' ? obj.enabled : true;
+		return (...args) => {
+			if(enabled) {
+				var idn = name.length > 0 ? `-${name}` : '';
+				args.unshift(`[${this.now()}${idn}]${prefix}:`);
+				console.log.apply(null,args);
 			}
 		};
-		xhr.send(JSON.stringify(obj));
-	});
-};
+	};
+
+	this.tStart = function tStart(name) {
+		if(typeof name !== 'string') throw new TypeError(NAME_TYPE_INVALID);
+		timers[name] = {
+			start: performance.now(),
+			diff: 0
+		};
+	};
+
+	this.tStop = function tStop(name) {
+		checkName(name);
+		var now = performance.now();
+		timers[name].diff = now - timers[name].start;
+		return timers[name].diff;
+	};
+
+	this.tCurrent = function tCurrent(name) {
+		checkName(name);
+		var now = performance.now();
+		return now - timers[name].start;
+	};
+
+	this.tGet = function tGet(name) {
+		checkName(name);
+		return timers[name];
+	};
+
+	this.tClear = function tClear(name) {
+		checkName(name);
+		timers[name] = {
+			start: 0,
+			diff: 0
+		};
+	};
+
+}
+
+var exp = new CLogs();
+
+module.exports = exp;
 
 
 /***/ },
-/* 44 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 /**
@@ -1244,7 +1222,7 @@ exports.sendJSON = function sendJSON(url,obj) {
  */
 
 var parser = __webpack_require__(22);
-var Emitter = __webpack_require__(33);
+var Emitter = __webpack_require__(32);
 
 /**
  * Module exports.
@@ -1397,7 +1375,7 @@ Transport.prototype.onClose = function () {
 
 
 /***/ },
-/* 45 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {// browser shim for xmlhttprequest module
@@ -1441,8 +1419,8 @@ module.exports = function (opts) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ },
-/* 46 */,
-/* 47 */
+/* 45 */,
+/* 46 */
 /***/ function(module, exports) {
 
 /**
@@ -1485,6 +1463,7 @@ exports.decode = function(qs){
 
 
 /***/ },
+/* 47 */,
 /* 48 */,
 /* 49 */,
 /* 50 */,
@@ -1506,8 +1485,7 @@ exports.decode = function(qs){
 /* 66 */,
 /* 67 */,
 /* 68 */,
-/* 69 */,
-/* 70 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 
@@ -1517,9 +1495,9 @@ exports.decode = function(qs){
 
 var debug = __webpack_require__(14)('socket.io-parser');
 var json = __webpack_require__(224);
-var Emitter = __webpack_require__(33);
+var Emitter = __webpack_require__(32);
 var binary = __webpack_require__(222);
-var isBuf = __webpack_require__(112);
+var isBuf = __webpack_require__(109);
 
 /**
  * Protocol version.
@@ -1917,117 +1895,8 @@ function error(data){
 
 
 /***/ },
+/* 70 */,
 /* 71 */
-/***/ function(module, exports, __webpack_require__) {
-
-if(typeof window !== 'undefined') {
-
-	var io = __webpack_require__(220);
-	var store = __webpack_require__(73);
-
-	var logger = __webpack_require__(32);
-	var log = logger.makeLog({name:'c-socket'});
-	var error = logger.makeLog({name:'c-socket',prefix:'ERROR'});
-
-    var socket = io(window.location.origin+'/fs');
-
-    let reconnecting = false;
-    let count = 0;
-
-    socket.on('connect',() => {
-        log('connected to server');
-    });
-
-    socket.on('error',(err) => {
-        log('error in the connection,',err);
-    });
-
-    socket.on('disconnect',() => log('disconnected from server'));
-
-    socket.on('reconnect',() => {
-        reconnecting = false;
-        count = 0;
-        log('reconnected with server');
-    });
-
-    socket.on('reconnect_attempt',() => {
-        ++count;
-        log('count:',count);
-    });
-
-    socket.on('reconnecting',() => {
-        if(!reconnecting) {
-            log('attempting to reconnect');
-            reconnecting = true;
-        }
-    });
-
-    socket.on('reconnect_failed',() => log('failed to reconnect with server'));
-
-    module.exports = socket;
-
-}
-
-
-/***/ },
-/* 72 */,
-/* 73 */
-/***/ function(module, exports) {
-
-function Store() {
-
-	var is_set = typeof window !== 'undefined';
-
-	var ss = (is_set) ? window.sessionStorage : null;
-
-	var ls = (is_set) ? window.localStorage : null;
-
-	this.get = function get(key,use_ss = true) {
-		if(is_set) {
-			if(use_ss || typeof use_ss === 'undefined') {
-				return ss.getItem(key);
-			} else {
-				return ls.getItem(key);
-			}
-		}
-	};
-
-	this.set = function set(key,value,use_ss = true) {
-		if(is_set) {
-			if(use_ss || typeof use_ss === 'undefined') {
-				ss.setItem(key,value);
-			} else {
-				ls.setItem(key,value);
-			}
-		}
-	};
-
-	this.remove = function remove(key,use_ss = true) {
-		if(is_set) {
-			if(use_ss || typeof use_ss === 'undefined') {
-				ss.removeItem(key);
-			} else {
-				ls.removeItem(key);
-			}
-		}
-	};
-
-	this.clear = function clear(use_ss = true) {
-		if(is_set) {
-			if(use_ss || typeof use_ss === 'undefined') {
-				ss.clear();
-			} else {
-				ls.clear();
-			}
-		}
-	};
-}
-
-module.exports = new Store();
-
-
-/***/ },
-/* 74 */
 /***/ function(module, exports) {
 
 /**
@@ -2056,14 +1925,14 @@ module.exports = function(obj, fn){
 
 
 /***/ },
-/* 75 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {/**
  * Module dependencies
  */
 
-var XMLHttpRequest = __webpack_require__(45);
+var XMLHttpRequest = __webpack_require__(44);
 var XHR = __webpack_require__(127);
 var JSONP = __webpack_require__(126);
 var websocket = __webpack_require__(128);
@@ -2116,18 +1985,18 @@ function polling (opts) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ },
-/* 76 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 /**
  * Module dependencies.
  */
 
-var Transport = __webpack_require__(44);
-var parseqs = __webpack_require__(47);
+var Transport = __webpack_require__(43);
+var parseqs = __webpack_require__(46);
 var parser = __webpack_require__(22);
-var inherit = __webpack_require__(34);
-var yeast = __webpack_require__(114);
+var inherit = __webpack_require__(33);
+var yeast = __webpack_require__(111);
 var debug = __webpack_require__(14)('engine.io-client:polling');
 
 /**
@@ -2141,7 +2010,7 @@ module.exports = Polling;
  */
 
 var hasXHR2 = (function () {
-  var XMLHttpRequest = __webpack_require__(45);
+  var XMLHttpRequest = __webpack_require__(44);
   var xhr = new XMLHttpRequest({ xdomain: false });
   return null != xhr.responseType;
 })();
@@ -2367,10 +2236,10 @@ Polling.prototype.uri = function () {
 
 
 /***/ },
-/* 77 */,
-/* 78 */,
-/* 79 */,
-/* 80 */
+/* 74 */,
+/* 75 */,
+/* 76 */,
+/* 77 */
 /***/ function(module, exports) {
 
 
@@ -2385,7 +2254,7 @@ module.exports = function(arr, obj){
 };
 
 /***/ },
-/* 81 */
+/* 78 */
 /***/ function(module, exports) {
 
 /**
@@ -2430,6 +2299,9 @@ module.exports = function parseuri(str) {
 
 
 /***/ },
+/* 79 */,
+/* 80 */,
+/* 81 */,
 /* 82 */,
 /* 83 */,
 /* 84 */,
@@ -2453,10 +2325,7 @@ module.exports = function parseuri(str) {
 /* 102 */,
 /* 103 */,
 /* 104 */,
-/* 105 */,
-/* 106 */,
-/* 107 */,
-/* 108 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 
@@ -2465,13 +2334,13 @@ module.exports = function parseuri(str) {
  */
 
 var eio = __webpack_require__(123);
-var Socket = __webpack_require__(110);
-var Emitter = __webpack_require__(111);
-var parser = __webpack_require__(70);
-var on = __webpack_require__(109);
-var bind = __webpack_require__(74);
+var Socket = __webpack_require__(107);
+var Emitter = __webpack_require__(108);
+var parser = __webpack_require__(69);
+var on = __webpack_require__(106);
+var bind = __webpack_require__(71);
 var debug = __webpack_require__(14)('socket.io-client:manager');
-var indexOf = __webpack_require__(80);
+var indexOf = __webpack_require__(77);
 var Backoff = __webpack_require__(119);
 
 /**
@@ -3022,7 +2891,7 @@ Manager.prototype.onreconnect = function () {
 
 
 /***/ },
-/* 109 */
+/* 106 */
 /***/ function(module, exports) {
 
 
@@ -3052,7 +2921,7 @@ function on (obj, ev, fn) {
 
 
 /***/ },
-/* 110 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 
@@ -3060,11 +2929,11 @@ function on (obj, ev, fn) {
  * Module dependencies.
  */
 
-var parser = __webpack_require__(70);
-var Emitter = __webpack_require__(111);
+var parser = __webpack_require__(69);
+var Emitter = __webpack_require__(108);
 var toArray = __webpack_require__(225);
-var on = __webpack_require__(109);
-var bind = __webpack_require__(74);
+var on = __webpack_require__(106);
+var bind = __webpack_require__(71);
 var debug = __webpack_require__(14)('socket.io-client:socket');
 var hasBin = __webpack_require__(146);
 
@@ -3477,7 +3346,7 @@ Socket.prototype.compress = function (compress) {
 
 
 /***/ },
-/* 111 */
+/* 108 */
 /***/ function(module, exports) {
 
 
@@ -3644,7 +3513,7 @@ Emitter.prototype.hasListeners = function(event){
 
 
 /***/ },
-/* 112 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {
@@ -3664,7 +3533,7 @@ function isBuf(obj) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ },
-/* 113 */
+/* 110 */
 /***/ function(module, exports) {
 
 module.exports = function(module) {
@@ -3690,7 +3559,7 @@ module.exports = function(module) {
 
 
 /***/ },
-/* 114 */
+/* 111 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -3765,17 +3634,72 @@ module.exports = yeast;
 
 
 /***/ },
-/* 115 */
+/* 112 */
+/***/ function(module, exports, __webpack_require__) {
+
+if(typeof window !== 'undefined') {
+
+	var io = __webpack_require__(220);
+	var store = __webpack_require__(115);
+
+	var logger = __webpack_require__(42);
+	var log = logger.makeLog({name:'c-socket'});
+	var error = logger.makeLog({name:'c-socket',prefix:'ERROR'});
+
+    var socket = io(window.location.origin+'/fs');
+
+    let reconnecting = false;
+    let count = 0;
+
+    socket.on('connect',() => {
+        log('connected to server');
+    });
+
+    socket.on('error',(err) => {
+        log('error in the connection,',err);
+    });
+
+    socket.on('disconnect',() => log('disconnected from server'));
+
+    socket.on('reconnect',() => {
+        reconnecting = false;
+        count = 0;
+        log('reconnected with server');
+    });
+
+    socket.on('reconnect_attempt',() => {
+        ++count;
+        log('count:',count);
+    });
+
+    socket.on('reconnecting',() => {
+        if(!reconnecting) {
+            log('attempting to reconnect');
+            reconnecting = true;
+        }
+    });
+
+    socket.on('reconnect_failed',() => log('failed to reconnect with server'));
+
+    module.exports = socket;
+
+}
+
+
+/***/ },
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 var React = __webpack_require__(8);
 
-var { sendJSON } = __webpack_require__(43);
-var socket = __webpack_require__(71);
-var store = __webpack_require__(73);
-var { joinPath, splitPath } = __webpack_require__(20);
+var c_dir = '../../client';
 
-var logger = __webpack_require__(32);
+var { sendJSON } = __webpack_require__(116);
+var socket = __webpack_require__(112);
+var store = __webpack_require__(115);
+var { joinPath, splitPath } = __webpack_require__(21);
+
+var logger = __webpack_require__(42);
 var log = logger.makeLog({ name: 'App' });
 var error = logger.makeLog({ name: 'App', prefix: 'ERROR' });
 
@@ -3887,12 +3811,18 @@ var App = React.createClass({
 		let { nav, request } = this.state;
 		let check = joinPath(nav.path),
 		    request_path = '',
-		    againts = '';
+		    against = '';
 		switch (response.opp) {
 			case 'remove':
 				request_path = splitPath(response.path);
 				request_path.pop();
 				against = joinPath(request_path);
+				break;
+			case 'server':
+				if (response.type == 'page-update' && response.data.page == 'App.js') {
+					log('refreshing page');
+					window.location.reload(true);
+				}
 				break;
 			default:
 				against = response.path;
@@ -4062,7 +3992,85 @@ var App = React.createClass({
 module.exports = App;
 
 /***/ },
-/* 116 */,
+/* 114 */,
+/* 115 */
+/***/ function(module, exports) {
+
+function Store() {
+
+	var is_set = typeof window !== 'undefined';
+
+	var ss = (is_set) ? window.sessionStorage : null;
+
+	var ls = (is_set) ? window.localStorage : null;
+
+	this.get = function get(key,use_ss = true) {
+		if(is_set) {
+			if(use_ss || typeof use_ss === 'undefined') {
+				return ss.getItem(key);
+			} else {
+				return ls.getItem(key);
+			}
+		}
+	};
+
+	this.set = function set(key,value,use_ss = true) {
+		if(is_set) {
+			if(use_ss || typeof use_ss === 'undefined') {
+				ss.setItem(key,value);
+			} else {
+				ls.setItem(key,value);
+			}
+		}
+	};
+
+	this.remove = function remove(key,use_ss = true) {
+		if(is_set) {
+			if(use_ss || typeof use_ss === 'undefined') {
+				ss.removeItem(key);
+			} else {
+				ls.removeItem(key);
+			}
+		}
+	};
+
+	this.clear = function clear(use_ss = true) {
+		if(is_set) {
+			if(use_ss || typeof use_ss === 'undefined') {
+				ss.clear();
+			} else {
+				ls.clear();
+			}
+		}
+	};
+}
+
+module.exports = new Store();
+
+
+/***/ },
+/* 116 */
+/***/ function(module, exports) {
+
+exports.sendJSON = function sendJSON(url,obj) {
+	let base_url = window.location.origin + url;
+	return new Promise(function(resolve,reject) {
+		let xhr = new XMLHttpRequest();
+		xhr.open('post',base_url,true);
+		xhr.setRequestHeader('Content-type','application/json');
+		xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
+		xhr.onreadystatechange = () => {
+			if(xhr.readyState === XMLHttpRequest.DONE) {
+				let {status,response} = xhr;
+				resolve({status,response});
+			}
+		};
+		xhr.send(JSON.stringify(obj));
+	});
+};
+
+
+/***/ },
 /* 117 */
 /***/ function(module, exports) {
 
@@ -4633,14 +4641,14 @@ module.exports.parser = __webpack_require__(22);
  * Module dependencies.
  */
 
-var transports = __webpack_require__(75);
-var Emitter = __webpack_require__(33);
+var transports = __webpack_require__(72);
+var Emitter = __webpack_require__(32);
 var debug = __webpack_require__(14)('engine.io-client:socket');
-var index = __webpack_require__(80);
+var index = __webpack_require__(77);
 var parser = __webpack_require__(22);
-var parseuri = __webpack_require__(81);
+var parseuri = __webpack_require__(78);
 var parsejson = __webpack_require__(150);
-var parseqs = __webpack_require__(47);
+var parseqs = __webpack_require__(46);
 
 /**
  * Module exports.
@@ -4767,8 +4775,8 @@ Socket.protocol = parser.protocol; // this is an int
  */
 
 Socket.Socket = Socket;
-Socket.Transport = __webpack_require__(44);
-Socket.transports = __webpack_require__(75);
+Socket.Transport = __webpack_require__(43);
+Socket.transports = __webpack_require__(72);
 Socket.parser = __webpack_require__(22);
 
 /**
@@ -5372,8 +5380,8 @@ Socket.prototype.filterUpgrades = function (upgrades) {
  * Module requirements.
  */
 
-var Polling = __webpack_require__(76);
-var inherit = __webpack_require__(34);
+var Polling = __webpack_require__(73);
+var inherit = __webpack_require__(33);
 
 /**
  * Module exports.
@@ -5609,10 +5617,10 @@ JSONPPolling.prototype.doWrite = function (data, fn) {
  * Module requirements.
  */
 
-var XMLHttpRequest = __webpack_require__(45);
-var Polling = __webpack_require__(76);
-var Emitter = __webpack_require__(33);
-var inherit = __webpack_require__(34);
+var XMLHttpRequest = __webpack_require__(44);
+var Polling = __webpack_require__(73);
+var Emitter = __webpack_require__(32);
+var inherit = __webpack_require__(33);
 var debug = __webpack_require__(14)('engine.io-client:polling-xhr');
 
 /**
@@ -6033,11 +6041,11 @@ function unloadHandler () {
  * Module dependencies.
  */
 
-var Transport = __webpack_require__(44);
+var Transport = __webpack_require__(43);
 var parser = __webpack_require__(22);
-var parseqs = __webpack_require__(47);
-var inherit = __webpack_require__(34);
-var yeast = __webpack_require__(114);
+var parseqs = __webpack_require__(46);
+var inherit = __webpack_require__(33);
+var yeast = __webpack_require__(111);
 var debug = __webpack_require__(14)('engine.io-client:websocket');
 var BrowserWebSocket = global.WebSocket || global.MozWebSocket;
 
@@ -6765,8 +6773,8 @@ module.exports = function parsejson(data) {
  */
 
 var url = __webpack_require__(221);
-var parser = __webpack_require__(70);
-var Manager = __webpack_require__(108);
+var parser = __webpack_require__(69);
+var Manager = __webpack_require__(105);
 var debug = __webpack_require__(14)('socket.io-client');
 
 /**
@@ -6866,8 +6874,8 @@ exports.connect = lookup;
  * @api public
  */
 
-exports.Manager = __webpack_require__(108);
-exports.Socket = __webpack_require__(110);
+exports.Manager = __webpack_require__(105);
+exports.Socket = __webpack_require__(107);
 
 
 /***/ },
@@ -6879,7 +6887,7 @@ exports.Socket = __webpack_require__(110);
  * Module dependencies.
  */
 
-var parseuri = __webpack_require__(81);
+var parseuri = __webpack_require__(78);
 var debug = __webpack_require__(14)('socket.io-client:url');
 
 /**
@@ -6963,7 +6971,7 @@ function url (uri, loc) {
  */
 
 var isArray = __webpack_require__(223);
-var isBuf = __webpack_require__(112);
+var isBuf = __webpack_require__(109);
 
 /**
  * Replaces every Buffer | ArrayBuffer in packet with a numbered placeholder.
@@ -8016,7 +8024,7 @@ module.exports = Array.isArray || function (arr) {
   }
 }).call(this);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(113)(module), __webpack_require__(7)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(110)(module), __webpack_require__(7)))
 
 /***/ },
 /* 225 */
@@ -8282,15 +8290,15 @@ function toArray(list, index) {
 
 }(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(113)(module), __webpack_require__(7)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(110)(module), __webpack_require__(7)))
 
 /***/ },
 /* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
 var React = __webpack_require__(8);
-var { isoDate } = __webpack_require__(20);
-var classnames = __webpack_require__(72);
+var { isoDate } = __webpack_require__(21);
+var classnames = __webpack_require__(70);
 
 var DirContents = React.createClass({
     displayName: 'DirContents',
@@ -8379,7 +8387,7 @@ module.exports = DirContents;
 /***/ function(module, exports, __webpack_require__) {
 
 var React = __webpack_require__(8);
-var { isoDate } = __webpack_require__(20);
+var { isoDate } = __webpack_require__(21);
 
 var FileContents = React.createClass({
 	displayName: 'FileContents',
@@ -8515,7 +8523,7 @@ module.exports = ItemInfo;
 
 var React = __webpack_require__(8);
 
-var { joinPath } = __webpack_require__(20);
+var { joinPath } = __webpack_require__(21);
 
 var NavBar = React.createClass({
 	displayName: 'NavBar',
@@ -8634,9 +8642,9 @@ module.exports = UploadBar;
 var React = __webpack_require__(8);
 var {render} = __webpack_require__(25);
 
-var socket = __webpack_require__(71);
+var socket = __webpack_require__(112);
 
-var App = __webpack_require__(115);
+var App = __webpack_require__(113);
 
 render(React.createElement(App),document.getElementById('render'));
 

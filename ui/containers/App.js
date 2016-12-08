@@ -1,5 +1,7 @@
 var React = require('react');
 
+var c_dir = '../../client';
+
 var { sendJSON } = require('../../client/xhr.js');
 var socket = require('../../client/socket.js');
 var store = require('../../client/Store.js');
@@ -117,12 +119,18 @@ var App = React.createClass({
 		let { nav, request } = this.state;
 		let check = joinPath(nav.path),
 		    request_path = '',
-		    againts = '';
+		    against = '';
 		switch (response.opp) {
 			case 'remove':
 				request_path = splitPath(response.path);
 				request_path.pop();
 				against = joinPath(request_path);
+				break;
+			case 'server':
+				if (response.type == 'page-update' && response.data.page == 'App.js') {
+					log('refreshing page');
+					window.location.reload(true);
+				}
 				break;
 			default:
 				against = response.path;
