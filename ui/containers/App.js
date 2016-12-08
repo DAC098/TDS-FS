@@ -1,7 +1,5 @@
 var React = require('react');
 
-var c_dir = '../../client';
-
 var { sendJSON } = require('../../client/xhr.js');
 var socket = require('../../client/socket.js');
 var store = require('../../client/Store.js');

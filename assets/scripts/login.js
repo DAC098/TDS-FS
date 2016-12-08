@@ -1,12 +1,12 @@
 webpackJsonp([1],{
 
-/***/ 114:
+/***/ 110:
 /***/ function(module, exports, __webpack_require__) {
 
-var React = __webpack_require__(8);
+var React = __webpack_require__(10);
 
-var log = __webpack_require__(42).makeLog('Login');
-var { sendJSON } = __webpack_require__(116);
+var log = __webpack_require__(30).makeLog('Login');
+var { sendJSON } = __webpack_require__(40);
 
 var Login = React.createClass({
     displayName: 'Login',
@@ -136,30 +136,7 @@ module.exports = Login;
 
 /***/ },
 
-/***/ 116:
-/***/ function(module, exports) {
-
-exports.sendJSON = function sendJSON(url,obj) {
-	let base_url = window.location.origin + url;
-	return new Promise(function(resolve,reject) {
-		let xhr = new XMLHttpRequest();
-		xhr.open('post',base_url,true);
-		xhr.setRequestHeader('Content-type','application/json');
-		xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
-		xhr.onreadystatechange = () => {
-			if(xhr.readyState === XMLHttpRequest.DONE) {
-				let {status,response} = xhr;
-				resolve({status,response});
-			}
-		};
-		xhr.send(JSON.stringify(obj));
-	});
-};
-
-
-/***/ },
-
-/***/ 21:
+/***/ 16:
 /***/ function(module, exports) {
 
 function getType(variable) {
@@ -259,23 +236,23 @@ exports.splitPath = function splitPath(str) {
 
 /***/ },
 
-/***/ 235:
+/***/ 248:
 /***/ function(module, exports, __webpack_require__) {
 
-var React = __webpack_require__(8);
-var {render} = __webpack_require__(25);
+var React = __webpack_require__(10);
+var {render} = __webpack_require__(24);
 
-var Login = __webpack_require__(114);
+var Login = __webpack_require__(110);
 
 render(React.createElement(Login),document.getElementById('render'));
 
 
 /***/ },
 
-/***/ 42:
+/***/ 30:
 /***/ function(module, exports, __webpack_require__) {
 
-var {padStart} = __webpack_require__(21);
+var {padStart} = __webpack_require__(16);
 
 function CLogs() {
 
@@ -354,6 +331,29 @@ var exp = new CLogs();
 module.exports = exp;
 
 
+/***/ },
+
+/***/ 40:
+/***/ function(module, exports) {
+
+exports.sendJSON = function sendJSON(url,obj) {
+	let base_url = window.location.origin + url;
+	return new Promise(function(resolve,reject) {
+		let xhr = new XMLHttpRequest();
+		xhr.open('post',base_url,true);
+		xhr.setRequestHeader('Content-type','application/json');
+		xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');
+		xhr.onreadystatechange = () => {
+			if(xhr.readyState === XMLHttpRequest.DONE) {
+				let {status,response} = xhr;
+				resolve({status,response});
+			}
+		};
+		xhr.send(JSON.stringify(obj));
+	});
+};
+
+
 /***/ }
 
-},[235]);
+},[248]);
