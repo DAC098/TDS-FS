@@ -14,8 +14,6 @@ for(let c = 0; c < len; ++c) {
 	}
 }
 
-console.log('env:',process.env.NODE_ENV);
-
 global.settings = require('./lib/SettingsManager/index.js')('./settings.json');
 
 global.logger = require('./server/logging.js');
