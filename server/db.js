@@ -5,12 +5,6 @@ const events = require('events');
 const MongoClient = require('mongodb').MongoClient;
 const co = require('co');
 
-// app modules
-const logger = require('./logging.js');
-
-// json files
-const settings = require('../settings.json');
-
 // log methods
 const log = logger.makeLog('cout',{name:'db'});
 const error = logger.makeLog('cout',{name:'db',prefix:'ERROR'});

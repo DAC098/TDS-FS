@@ -2,7 +2,6 @@
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
-const crypt = require('crypto');
 const path = require('path');
 
 // npm modules
@@ -11,16 +10,13 @@ const bodyParser = require('body-parser');
 
 // app modules
 const {cookieParser,session} = require('./session.js');
-const logging = require('./logging.js');
 const router = require('./routers/fs.js');
 const {connect} = require('./socket.js');
-
-// json files
-const settings = require('../settings.json');
+const crypt = require('./crypt.js');
 
 // log methods
-const log = logging.makeLog('cout',{name:'server'});
-const error = logging.makeLog('cout',{name:'server',prefix:'ERROR'});
+const log = logger.makeLog('cout',{name:'server'});
+const error = logger.makeLog('cout',{name:'server',prefix:'ERROR'});
 
 function Server() {
 
@@ -48,7 +44,7 @@ function Server() {
 
 	this.startHTTP = function startHTTP() {
 		try {
-			logging.tStart('http_server_start');
+			logger.tStart('http_server_start');
 
 			let opt = settings.http;
 
@@ -56,51 +52,42 @@ function Server() {
 				connect(http_server);
 				http_started = true;
 
-				logging.tStop('http_server_start');
+				logger.tStop('http_server_start');
 				log(`http server info
 	host: ${opt.host}
 	port: ${opt.port}
-	startup time: ${logging.tResults('http_server_start')}`);
-				logging.tClear('http_server_start');
+	startup time: ${logger.tResults('http_server_start')}`);
+				logger.tClear('http_server_start');
 			});
 		} catch(err) {
 			error('http server failed to start:',err.message);
-			logging.tStop('http_server_start');
-			logging.tClear('http_server_start');
+			logger.tStop('http_server_start');
+			logger.tClear('http_server_start');
 		}
 	};
 
 	this.startHTTPS = function startHTTPS() {
 		try {
-			logging.tStart('https_server_start');
+			logger.tStart('https_server_start');
 
 			let opt = settings.https;
 
-			let cert = {
-				key: fs.readFileSync(opt.key),
-				cert: fs.readFileSync(opt.cert)
-			};
-
-			if('passphrase' in opt) {
-				cert.passphrase = opt.passphrase;
-			}
-
-			https_server = https.createServer(cert,app).listen(opt.port,opt.host,opt.backlog,() => {
+			https_server = https.createServer(crypt.getSSLData(),app).listen(opt.port,opt.host,opt.backlog,() => {
 				connect(https_server);
 				https_started = true;
 
-				logging.tStop('https_server_start');
+				logger.tStop('https_server_start');
 				log(`https server info
 	host: ${opt.host}
 	port: ${opt.port}
-	startup time: ${logging.tResults('https_server_start')}`);
-				logging.tClear('https_server_start');
+	startup time: ${logger.tResults('https_server_start')}`);
+				logger.tClear('https_server_start');
 			});
 
 		} catch(err) {
 			error('https server failed to start:',err.message);
-			logging.tStop('https_server_start');
-			logging.tClear('https_server_start');
+			logger.tStop('https_server_start');
+			logger.tClear('https_server_start');
 		}
 	};
 

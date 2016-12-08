@@ -3,12 +3,10 @@ const npath = require('path');
 const React = require('react');
 const {renderToString} = require('react-dom/server');
 
-const log = require('./logging.js').makeLog('cout',{name:'html'});
 const manager = require('./pageMan.js');
 
-manager.on('update',(name) => {
-	log('page updated:',npath.basename(name));
-});
+const log = logger.makeLog('cout',{name:'html'});
+const error = logger.makeLog('cout',{name:'html',prefix:'ERROR'});
 
 exports.htmlBody = function htmlBody(page,render = {}) {
 	let element = null;

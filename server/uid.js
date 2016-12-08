@@ -1,6 +1,6 @@
 const co = require('co');
 
-const log = require('./logging.js').makeLog('cout',{name:'UID'});
+const log = logger.makeLog('cout',{name:'UID'});
 
 const db = require('./db.js');
 

@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 
-const Logger = require('Logger')();
+const Logger = require('../lib/Logger')();
 
 const today = new Date();
 
@@ -11,12 +11,10 @@ const ftime = Logger.dTime(today,false);
 
 const file_path = path.join(process.cwd(),'log_files',`${fdate.year}${fdate.month}${fdate.mday}T${ftime.hr}${ftime.min}${ftime.sec}`);
 
-console.log('checking dir');
 try {
 	let stats = fs.statSync(path.join(process.cwd(),'log_files'));
 } catch(err) {
 	if(err.code == 'ENOENT') {
-		console.log('making dir');
 		fs.mkdirSync(path.join(process.cwd(),'log_files'));
 	}
 }

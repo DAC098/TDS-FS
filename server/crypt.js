@@ -2,8 +2,6 @@
 const crypto = require('crypto');
 const fs = require('fs');
 
-const settings = require('./settingMan.js');
-
 // log methods
 const log = require('./logging.js').makeLog('cout',{name:'crypt'});
 const error = require('./logging.js').makeLog('cout',{name:'crypt',prefix:'ERROR'});
@@ -11,10 +9,6 @@ const error = require('./logging.js').makeLog('cout',{name:'crypt',prefix:'ERROR
 const HASH = 'sha512';
 const ENCODING = 'utf-8';
 const BASE = 'base64';
-
-console.log('finding ssl key string--------------------------------------------');
-console.log('ssl key',settings.ssl.key);
-console.log('completed---------------------------------------------------------');
 
 var cert = {
 	key: fs.readFileSync(settings.ssl.key),
@@ -26,7 +20,7 @@ if('passphrase' in settings.ssl) {
 }
 
 exports.getSSLData = function getSSLData() {
-
+	return cert;
 };
 
 exports.getSalt = () => {

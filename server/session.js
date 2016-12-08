@@ -3,15 +3,12 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
 
-// json files
-const {db} = require('../settings.json');
-
 // log methods
-const log = require('./logging.js').makeLog('cout',{name:'Store'});
-const error = require('./logging.js').makeLog('cout',{name:'Store',prefix:'ERROR'});
+const log = logger.makeLog('cout',{name:'Store'});
+const error = logger.makeLog('cout',{name:'Store',prefix:'ERROR'});
 
 let store = new MongoStore({
-	uri: `mongodb://${db.host}:${db.port}/fs`,
+	uri: `mongodb://${settings.db.host}:${settings.db.port}/fs`,
 	collection: 'sessions'
 });
 

@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 // log methods
-const log = require('./logging.js').makeLog('cout',{name:'FS'});
-const error = require('./logging.js').makeLog('cout',{name:'FS',prefix:'ERROR'});
+const log = logger.makeLog('cout',{name:'FS'});
+const error = logger.makeLog('cout',{name:'FS',prefix:'ERROR'});
 
 exports.retrieveFolder = function retrieveFolder(root,url) {
 	//log('retrieveFolder\nroot:',root,'\nurl:',url);
