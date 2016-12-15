@@ -16,12 +16,9 @@ const {getSalt,getHash} = require('../crypt.js');
 const {getNextID} = require('../uid.js');
 const db = require('../db.js');
 
-// json files
-const settings = require('../../settings.json');
-
 // log methods
-const log = require('../logging.js').makeLog('cout',{name:'fs_router'});
-const error = require('../logging.js').makeLog('cout',{name:'fs_router',prefix:'ERROR'});
+const log = logger.makeLog('cout',{name:'fs_router'});
+const error = logger.makeLog('cout',{name:'fs_router',prefix:'ERROR'});
 
 // ----------------------------------------------------------------------------
 // variables

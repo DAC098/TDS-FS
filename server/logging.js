@@ -4,14 +4,14 @@ const util = require('util');
 
 const Logger = require('../lib/Logger')();
 
-var stdout = {};
-
 const today = new Date();
 
 const fdate = Logger.today(today,false);
 const ftime = Logger.dTime(today,false);
 
 const file_path = path.join(process.cwd(),'log_files',`${fdate.year}${fdate.month}${fdate.mday}T${ftime.hr}${ftime.min}${ftime.sec}`);
+
+var stdout = {};
 
 try {
 	let stats = fs.statSync(path.join(process.cwd(),'log_files'));
