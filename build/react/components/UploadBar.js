@@ -28,7 +28,8 @@ var UploadBar = React.createClass({
     },
     render: function() {
         return (
-            <section className='row'>
+            <section className='col-12 container'>
+				<div className='col-6'>
                 <form>
                     <input type='file' ref='file' multiple
                         onChange={() => this.handleChange('file')}
@@ -38,6 +39,8 @@ var UploadBar = React.createClass({
                         value='upload'
                     />
                 </form>
+				</div>
+				<div className='col-6'>
                 <form>
                     <input type='text' ref='dir'
                         className='inline'
@@ -49,6 +52,7 @@ var UploadBar = React.createClass({
                         value='create'
                     />
                 </form>
+				</div>
             </section>
         );
     }

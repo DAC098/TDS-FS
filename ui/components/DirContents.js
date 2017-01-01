@@ -44,7 +44,7 @@ var DirContents = React.createClass({
         var dir_empty = this.props.dir.length === 0;
         return React.createElement(
             'table',
-            null,
+            { className: 'md-table' },
             React.createElement(
                 'thead',
                 null,

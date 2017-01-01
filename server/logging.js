@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 
-const Logger = require('../lib/Logger')();
+const Logger = reqLib('Logger')();
 
 const today = new Date();
 

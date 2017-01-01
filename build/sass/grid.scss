@@ -1,0 +1,71 @@
+/*
+.gen-cols(@c,@i:1) when (@i =< @c) {
+
+    .col-@{i} {
+        position: relative;
+        display: table-cell;
+        width: (@i * 100% / @c);
+    }
+
+    .gen-cols(@c,@i + 1);
+}
+
+.grid {
+    position: relative;
+    display: table;
+    width: 100%;
+
+    &.col-*,&.row {
+        width: inherit;
+    }
+
+    &.parent-h {
+        height: 100%;
+    }
+
+    .gen-cols(12);
+
+    & .row {
+        display: table-row;
+        width: 100%;
+    }
+}
+*/
+.container {
+	display: inline-flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	align-items: flex-start;
+	align-content: flex-start;
+
+	width: 100%;
+
+	@for $c from 1 through 12 {
+		.col-#{$c} {flex: 1 1 ($c / 12) * 100%;}
+	}
+
+	.justify-right {
+		justify-content: flex-end;
+	}
+
+	.justify-between {
+		justify-content: space-between;
+	}
+
+	.justify-around {
+		justify-content: space-around;
+	}
+
+	.direct-h-rev {
+		flex-direction: row-reverse;
+	}
+
+	.direct-v {
+		flex-direction: column;
+	}
+
+	.direct-v-rev {
+		flex-direction: column-reverse;
+	}
+}

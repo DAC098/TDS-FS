@@ -1,0 +1,118 @@
+table.md-table {
+
+	position: relative;
+
+	border-collapse: collapse;
+
+	transition: 200ms;
+
+	thead {
+
+		tr {
+
+			height: 56px;
+
+			th {
+
+				padding: 0 28px;
+				text-align: right;
+
+				&:first-child {
+
+					text-align: left;
+
+				}
+
+			}
+
+		}
+
+	}
+
+	tbody {
+
+		tr {
+
+			height: 48px;
+			transition: 200ms;
+
+			td {
+
+				padding: 0 28px;
+				text-align: right;
+
+				&:first-child {
+
+					text-align: left;
+
+				}
+
+			}
+
+			&.selected {
+
+				background-color: $blueA200;
+				color: $gray100;
+
+				&:hover {
+
+					background-color: $blueA400;
+
+				}
+
+			}
+
+			&.hidden {
+				display: none;
+			}
+
+			&:hover {
+
+				background-color: $gray200;
+
+			}
+
+		}
+
+	}
+
+	tfoot {
+
+		tr {
+
+			height: 56px;
+			border: none;
+
+			td {
+
+				column-span: all;
+
+			}
+
+		}
+
+	}
+
+	tr {
+
+		border-bottom: 1px solid #e0e0e0;
+
+	}
+
+	td, th {
+
+		&.left {
+
+			text-align: left;
+
+		}
+
+		&.right {
+
+			text-align: right;
+
+		}
+
+	}
+
+}

@@ -27,7 +27,7 @@ var ItemInfo = React.createClass({
         let {nav} = this.props;
         let meta = contentData(this.props.info);
         return (
-            <section id='dir-info' className='row'>
+            <section id='dir-info' className='col-12'>
                 <ul className='horizontal'>
                     <li>size: {meta.MiB}MiB | {meta.KiB}KiB</li>
                     { nav.type.dir ?

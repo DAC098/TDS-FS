@@ -30,7 +30,7 @@ var ItemInfo = React.createClass({
         let meta = contentData(this.props.info);
         return React.createElement(
             'section',
-            { id: 'dir-info', className: 'row' },
+            { id: 'dir-info', className: 'col-12' },
             React.createElement(
                 'ul',
                 { className: 'horizontal' },

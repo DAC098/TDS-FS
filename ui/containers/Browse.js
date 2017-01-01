@@ -1,13 +1,13 @@
 var React = require('react');
 
 var { sendJSON } = require('../../client/xhr.js');
-var socket = require('../../client/socket.js');
+var socket = require('../../client/CSocket.js')('fs');
 var store = require('../../client/Store.js');
 var { joinPath, splitPath } = require('../../lib/misc.js');
 
-var logger = require('../../client/CLogs.js');
-var log = logger.makeLog({ name: 'App' });
-var error = logger.makeLog({ name: 'App', prefix: 'ERROR' });
+var logger = logger || require('../../client/CLogs.js');
+var log = logger.makeLog('cout', { name: 'App' });
+var error = logger.makeLog('cout', { name: 'App', prefix: 'ERROR' });
 
 var DirContents = require('../components/DirContents.js');
 var FileContents = require('../components/FileContents.js');
@@ -17,8 +17,8 @@ var UploadBar = require('../components/UploadBar.js');
 
 var is_client = typeof window !== 'undefined';
 
-var App = React.createClass({
-	displayName: 'App',
+var Browse = React.createClass({
+	displayName: 'Browse',
 
 	getInitialState: function () {
 		return {
@@ -123,12 +123,6 @@ var App = React.createClass({
 				request_path = splitPath(response.path);
 				request_path.pop();
 				against = joinPath(request_path);
-				break;
-			case 'server':
-				if (response.type == 'page-update' && response.data.page == 'App.js') {
-					log('refreshing page');
-					window.location.reload(true);
-				}
 				break;
 			default:
 				against = response.path;
@@ -270,10 +264,10 @@ var App = React.createClass({
 		}
 		return React.createElement(
 			'main',
-			{ className: 'grid' },
+			{ className: 'container' },
 			React.createElement(
 				'header',
-				{ id: 'tool-area', className: 'grid' },
+				{ id: 'tool-area', className: 'container' },
 				React.createElement(UploadBar, { upload: state.upload,
 					uploadFiles: this.uploadFiles,
 					uploadDir: this.uploadDir,
@@ -285,14 +279,14 @@ var App = React.createClass({
 				}),
 				React.createElement(ItemInfo, { nav: state.nav, info: state.nav.type.file ? state.content.file : state.content.dir })
 			),
-			React.createElement('div', { id: 'header-pad', className: 'row' }),
+			React.createElement('div', { id: 'header-pad', className: 'col-12' }),
 			React.createElement(
 				'section',
-				{ id: 'content-area', className: 'row scroll-area' },
+				{ id: 'content-area', className: 'col-12 scroll-area' },
 				view
 			)
 		);
 	}
 });
 
-module.exports = App;
+module.exports = Browse;

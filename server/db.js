@@ -1,102 +1,22 @@
-// node modules
-const events = require('events');
+const DB = reqLib('DB');
 
-// npm modules
-const MongoClient = require('mongodb').MongoClient;
-const co = require('co');
-
-// log methods
 const log = logger.makeLog('cout',{name:'db'});
 const error = logger.makeLog('cout',{name:'db',prefix:'ERROR'});
 
-const db = function db() {
+var options = Object.assign({},settings.db);
 
-	logger.tStart('mongo_startup');
+var db = new DB(settings.db);
 
-	events.call(this);
-	db.prototype.__proto__ = events.prototype;
+db.createCollection('users');
+db.createCollection('files');
+db.createCollection('directories');
 
-	const self = this;
+db.on('error',(err) => {
+	error(err.message);
+});
 
-	var connectors = {
-		main: null,
-		users: null,
-		files: null,
-		directories: null
-	};
+db.on('ready',() => {
+	log('db ready');
+});
 
-	co(function*() {
-		log('connecting to mongodb');
-		try {
-			connectors.main = yield MongoClient.connect(`mongodb://${settings.db.host}:${settings.db.port}/fs`);
-			connectors.users = yield connectors.main.createCollection('users');
-			connectors.files = yield connectors.main.createCollection('files');
-			connectors.directories = yield connectors.main.createCollection('directories');
-
-			connectors.main.on('authenticated',(obj) => {
-				log('db authenticated');
-			});
-
-			connectors.main.on('close',(err) => {
-				log('db closed');
-				if(err) error(err.message);
-			});
-
-			connectors.main.on('error',(err) => {
-				error(err.message);
-			});
-
-			connectors.main.on('fullsetup',(db) => {
-				log('db setup');
-			});
-
-			connectors.main.on('parseError',(err) => {
-				error('parseError -',err.message);
-			});
-
-			connectors.main.on('reconnect',(obj) => {
-				log('db reconnected');
-			});
-
-			connectors.main.on('timeout',(err) => {
-				error('timeout -',err.message);
-			});
-
-			let keys = Object.keys(connectors);
-			for(let k of keys) {
-				Object.defineProperty(self,k,{
-					get: () => {
-						return connectors[k];
-					},
-					set: () => {},
-					configurable: false,
-					enumerable: false
-				});
-			}
-
-			ready = true;
-			self.emit('ready');
-
-			logger.tStop('mongo_startup');
-			log('ready, time:',logger.tResults('mongo_startup'));
-			logger.tClear('mongo_startup');
-		} catch(err) {
-			error('failed setup,',err.message);
-			logger.tStop('mongo_startup');
-			logger.tClear('mongo_startup');
-		}
-
-	});
-
-	Object.defineProperty(self,'ready',{
-		get: function() {
-			return ready;
-		},
-		set: function() {}
-	});
-
-};
-
-var item = new db();
-
-module.exports = item;
+module.exports = db;

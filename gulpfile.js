@@ -3,11 +3,10 @@ const npath = require('path');
 const gulp = require('gulp');
 const pump = require('pump');
 const webpack = require('webpack');
-const webStream = require('webpack-stream');
 
 const gutil = require('gulp-util');
 const babel = require('gulp-babel');
-const less = require('gulp-less');
+const sass = require('gulp-sass');
 const watch = require('gulp-watch');
 
 const chokidar = require('chokidar');
@@ -19,9 +18,9 @@ const dir = {
 		src: './build/react/**/*.js',
 		out: './ui'
 	},
-	less: {
-		src: './build/less/main.less',
-		imp: './build/less/imports/**/*.less',
+	sass: {
+		src: './build/sass/main.scss',
+		imp: './build/sass/**/*.scss',
 		out: './assets/style'
 	}
 };
@@ -47,25 +46,18 @@ function buildReact() {
 	logStart('React');
 	pump([
 		gulp.src(dir.react.src),
-		babel({
-			presets: ['react']
-		}),
+		babel({presets: ['react']}),
 		gulp.dest(dir.react.out)
-	],(err) => {
-		handleStream('React',err);
-		// buildBundle();
-	});
+	],err => handleStream('React',err));
 }
 
-function buildLess() {
-	logStart('Less');
+function buildSass() {
+	logStart('Sass');
 	pump([
-		gulp.src(dir.less.src),
-		less({
-			paths: dir.less.imp
-		}),
-		gulp.dest(dir.less.out)
-	],(err) => handleStream('Less',err));
+		gulp.src(dir.sass.src),
+		sass(),
+		gulp.dest(dir.sass.out)
+	],err => handleStream('Sass',err));
 }
 
 function buildBundle() {
@@ -77,7 +69,7 @@ function buildBundle() {
 			assetsSort: 'field',
 			cached:false,
 			children:false,
-			chunks:false,
+			chunks:true,
 			colors:true
 		})}`);
 	});
@@ -87,16 +79,16 @@ gulp.task('react',() => {
 	buildReact();
 });
 
-gulp.task('less',() => {
-	buildLess();
+gulp.task('sass',() => {
+	buildSass();
 });
 
 gulp.task('build-bundle',() => {
 	buildBundle();
 });
 
-gulp.task('watch-less',() => {
-	return watch([dir.less.src,dir.less.imp],() => buildLess());
+gulp.task('watch-sass',() => {
+	return watch([dir.sass.src,dir.sass.imp],() => buildSass());
 });
 
 gulp.task('watch-react',() => {
@@ -108,7 +100,6 @@ gulp.task('watch-react',() => {
 	watcher.add(dir.react.src);
 
 	watcher.on('change',(path) => {
-		// path = npath.join(root,path);
 		var dir_out = path.replace('build\\react','ui');
 		logStart('React','->',npath.basename(path));
 		pump([
@@ -119,4 +110,4 @@ gulp.task('watch-react',() => {
 	});
 });
 
-gulp.task('default',['react','less','watch-less','watch-react','build-bundle']);
+gulp.task('default',['react','sass','watch-sass','watch-react','build-bundle']);

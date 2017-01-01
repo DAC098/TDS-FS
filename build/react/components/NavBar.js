@@ -6,19 +6,19 @@ var NavBar = React.createClass({
 	render: function() {
 		let {nav} = this.props;
 		return (
-			<section id='nav-bar' className='row'>
+			<section id='nav-bar' className='col-12'>
 				<form>
-					<input className='small'
+					<input className='md-button flat dense'
 						onClick={() => this.props.logout()}
-						type='button' value='Logout'
+						type='button' value='LOGOUT'
 					/>
-					<input className='small'
+					<input className='md-button flat dense'
 						onClick={() => this.props.fetchDirection('refresh')}
-						type='button' value='Refresh'
+						type='button' value='REFRESH'
 					/>
-					<input disabled={nav.path.length === 0} className='small'
+					<input disabled={nav.path.length === 0} className='md-button flat dense'
 						onClick={() => this.props.fetchDirection('previous')}
-						type='button' value='Back'
+						type='button' value='BACK'
 					/>
 				</form>
 				<span>directory: {joinPath(nav.path)}</span>

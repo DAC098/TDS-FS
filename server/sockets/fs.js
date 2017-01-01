@@ -3,29 +3,41 @@ const path = require('path');
 const util = require('util');
 
 // npm modules
-const socketio = require('socket.io');
 const co = require('co');
 
 // app modules
-const {cookieParser,session} = require('./session.js');
-const fsm = require('./fsm.js');
-const pageMan = require('./pageMan.js');
+const {cookieParser,session} = require('../session.js');
+const fsm = require('../fsm.js');
+const io = require('./main.js');
+
+const pageMan = require('../pageMan.js');
+const {styleWatcher} = require('../pageMan.js');
 
 // log methods
-const log = logger.makeLog('cout',{name:'socket'});
-const error = logger.makeLog('cout',{name:'socket',prefix:'ERROR'});
+const log = logger.makeLog('cout',{name:'fs-soc'});
+const error = logger.makeLog('cout',{name:'fs-soc',prefix:'ERROR'});
 
-// ----------------------------------------------------------------------------
-exports.connect = function connect(server) {
-// ----------------------------------------------------------------------------
-
-log('connecting socketio to server');
-var io = new socketio(server);
 var total_connections = 0;
 
-var mse = io.of('/fs');
+var fssoc = io.of('/fs');
 
-mse.use(function(socket,next) {
+pageMan.on('update',(name) => {
+	log('sending page update to socket');
+	let data = {
+		page: path.basename(name)
+	};
+	fssoc.emit('update',{opp:'server',type:'page-update',data});
+});
+
+styleWatcher.on('change',(name) => {
+	log('sending style update to socket');
+	let data = {
+		sheet: path.basename(name)
+	};
+	fssoc.emit('update',{opp:'server',type:'style-update',data});
+});
+
+fssoc.use(function(socket,next) {
 	let req = socket.handshake;
 	let res = {};
 	cookieParser(req,res,function(err) {
@@ -37,7 +49,7 @@ mse.use(function(socket,next) {
 	});
 });
 
-mse.use(function(socket,next) {
+fssoc.use(function(socket,next) {
 	if(socket.handshake.session.root) {
 		return next();
 	} else {
@@ -45,7 +57,7 @@ mse.use(function(socket,next) {
 	}
 });
 
-mse.on('connection',(socket) => {
+fssoc.on('connection',(socket) => {
 	++total_connections;
 	log(`client connected
 	username:       ${socket.handshake.session.username}
@@ -56,14 +68,6 @@ mse.on('connection',(socket) => {
 		log(`client disconnect
 	username:       ${socket.handshake.session.username}
 	connections:    ${total_connections}`);
-	});
-
-	pageMan.once('update',(name) => {
-		log('sending update to socket');
-		let data = {
-			page: path.basename(name)
-		};
-		socket.emit('update',{opp:'server',type:'page-update',data});
 	});
 
 // ----------------------------------------------------------------------------
@@ -128,7 +132,7 @@ mse.on('connection',(socket) => {
 				if(!exists) {
 					yield fsm.createFile(path.join(u_root,info.location),info.name,info.data);
 					socket.emit('opp-complete',{opp:'upload',type:'file'});
-					mse.emit('update',{type:'dir',path:info.location,opp:'upload'});
+					fssoc.emit('update',{type:'dir',path:info.location,opp:'upload'});
 				} else {
 					socket.emit('opp-failed',{opp:'upload',type:'file',msg:'file exists'});
 				}
@@ -151,7 +155,7 @@ mse.on('connection',(socket) => {
 				if(!exists) {
 					yield fsm.createDirectory(path.join(u_root,info.location,info.name));
 					socket.emit('opp-complete',{opp:'upload',type:'dir'});
-					mse.emit('update',{type:'dir',path:info.location,opp:'upload'});
+					fssoc.emit('update',{type:'dir',path:info.location,opp:'upload'});
 				} else {
 					socket.emit('opp-failed',{opp:'upload',type:'dir',msg:'directory exists'});
 				}
@@ -177,7 +181,7 @@ mse.on('connection',(socket) => {
 				if(exists) {
 					yield fsm.removeFile(path.join(u_root,info.location));
 					socket.emit('opp-complete',{opp:'remove',type:'file'});
-					mse.emit('update',{type:'dir',path:info.location,opp:'remove'});
+					fssoc.emit('update',{type:'dir',path:info.location,opp:'remove'});
 				} else {
 					socket.emit('opp-failed',{opp:'remove',type:'file',msg:'file does not exist'});
 				}
@@ -199,7 +203,7 @@ mse.on('connection',(socket) => {
 				if(size === 0 || info.force) {
 					yield fsm.removeDirectory(path.join(u_root,info.location));
 					socket.emit('opp-complete',{opp:'remove',type:'dir'});
-					mse.emit('update',{type:'dir',path:info.location,opp:'remove'});
+					fssoc.emit('update',{type:'dir',path:info.location,opp:'remove'});
 				} else {
 					socket.emti('opp-failed',{opp:'remove',type:'dir',msg:'directory is not empty'});
 				}
@@ -211,7 +215,3 @@ mse.on('connection',(socket) => {
 	});
 
 });
-
-// ----------------------------------------------------------------------------
-};
-// ----------------------------------------------------------------------------

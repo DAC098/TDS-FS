@@ -31,30 +31,38 @@ var UploadBar = React.createClass({
     render: function () {
         return React.createElement(
             'section',
-            { className: 'row' },
+            { className: 'col-12 container' },
             React.createElement(
-                'form',
-                null,
-                React.createElement('input', { type: 'file', ref: 'file', multiple: true,
-                    onChange: () => this.handleChange('file')
-                }),
-                React.createElement('input', { type: 'button', className: 'small',
-                    onClick: () => this.props.uploadFiles(),
-                    value: 'upload'
-                })
+                'div',
+                { className: 'col-6' },
+                React.createElement(
+                    'form',
+                    null,
+                    React.createElement('input', { type: 'file', ref: 'file', multiple: true,
+                        onChange: () => this.handleChange('file')
+                    }),
+                    React.createElement('input', { type: 'button', className: 'small',
+                        onClick: () => this.props.uploadFiles(),
+                        value: 'upload'
+                    })
+                )
             ),
             React.createElement(
-                'form',
-                null,
-                React.createElement('input', { type: 'text', ref: 'dir',
-                    className: 'inline',
-                    onChange: () => this.handleChange('dir'),
-                    value: this.props.upload.dir
-                }),
-                React.createElement('input', { type: 'button', className: 'small',
-                    onClick: () => this.props.uploadDir(),
-                    value: 'create'
-                })
+                'div',
+                { className: 'col-6' },
+                React.createElement(
+                    'form',
+                    null,
+                    React.createElement('input', { type: 'text', ref: 'dir',
+                        className: 'inline',
+                        onChange: () => this.handleChange('dir'),
+                        value: this.props.upload.dir
+                    }),
+                    React.createElement('input', { type: 'button', className: 'small',
+                        onClick: () => this.props.uploadDir(),
+                        value: 'create'
+                    })
+                )
             )
         );
     }

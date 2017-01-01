@@ -7,16 +7,38 @@ const MongoStore = require('connect-mongodb-session')(session);
 const log = logger.makeLog('cout',{name:'Store'});
 const error = logger.makeLog('cout',{name:'Store',prefix:'ERROR'});
 
-let store = new MongoStore({
+var store_options = {
 	uri: `mongodb://${settings.db.host}:${settings.db.port}/fs`,
 	collection: 'sessions'
-});
+};
 
-store.on('error',(err) => {
-	if(err) {
-		error(err.message);
-	}
-});
+var recon = {
+	attempts: 6,
+	count: 0,
+	interval: 5000,
+	timer: null
+};
+
+var store = null;
+
+function connectStore() {
+	store = new MongoStore(store_options);
+
+	store.on('error',(err) => {
+		if(err) {
+			if(err.message.match(/failed to connect/)) {
+				recon.timer = setTimeout(function() {
+					if(recon.count <= recon.attempts || recon.attempts == 0)
+						connectStore();
+					clearTimeout(recon.timer);
+				},recon.interval);
+			}
+			error(err.message);
+		}
+	});
+}
+
+connectStore();
 
 exports.store = store;
 
@@ -30,6 +52,6 @@ exports.session = session({
 		secure:true,
 		signed:true
 	},
-	store: store,
+	store,
 	name:'fs.sid'
 });

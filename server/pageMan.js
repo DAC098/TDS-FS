@@ -1,6 +1,10 @@
 const path = require('path');
 
-const PageManager = reqRoot('lib/PageManager/index.js');
+const chokidar = require('chokidar');
+
+const PageManager = reqLib('PageManager');
+
+const watcher = chokidar.watch('dir');
 
 const manager = new PageManager(process.cwd());
 
@@ -15,7 +19,7 @@ manager.on('update',(name) => {
 	log('page updated:',path.basename(name));
 });
 
-manager.addPage('App','./ui/containers/App.js',[
+manager.addPage('Browse','./ui/containers/Browse.js',[
 	'./ui/components/DirContents.js',
 	'./ui/components/FileContents.js',
 	'./ui/components/ItemInfo.js',
@@ -26,3 +30,7 @@ manager.addPage('App','./ui/containers/App.js',[
 manager.addPage('Login','./ui/containers/Login.js');
 
 module.exports = manager;
+
+watcher.add(path.join(process.cwd(),'assets','style'));
+
+module.exports.styleWatcher = watcher;

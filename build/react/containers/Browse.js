@@ -1,13 +1,13 @@
 var React = require('react');
 
 var {sendJSON} = require('../../client/xhr.js');
-var socket = require('../../client/socket.js');
+var socket = require('../../client/CSocket.js')('fs');
 var store = require('../../client/Store.js');
 var {joinPath,splitPath} = require('../../lib/misc.js');
 
-var logger = require('../../client/CLogs.js');
-var log = logger.makeLog({name:'App'});
-var error = logger.makeLog({name:'App',prefix:'ERROR'});
+var logger = logger || require('../../client/CLogs.js');
+var log = logger.makeLog('cout',{name:'App'});
+var error = logger.makeLog('cout',{name:'App',prefix:'ERROR'});
 
 var DirContents = require('../components/DirContents.js');
 var FileContents = require('../components/FileContents.js');
@@ -17,7 +17,7 @@ var UploadBar = require('../components/UploadBar.js');
 
 var is_client = typeof window !== 'undefined';
 
-var App = React.createClass({
+var Browse = React.createClass({
 	getInitialState: function() {
 		return {
 			selected: new Map(),
@@ -121,12 +121,6 @@ var App = React.createClass({
 				request_path = splitPath(response.path);
 				request_path.pop();
 				against = joinPath(request_path);
-				break;
-			case 'server':
-				if(response.type == 'page-update' && response.data.page == 'App.js') {
-					log('refreshing page');
-					window.location.reload(true);
-				}
 				break;
 			default:
 				against = response.path;
@@ -267,8 +261,8 @@ var App = React.createClass({
 					/>;
 		}
 		return (
-			<main className='grid'>
-				<header id='tool-area' className='grid'>
+			<main className='container'>
+				<header id='tool-area' className='container'>
 					<UploadBar upload={state.upload}
 						uploadFiles={this.uploadFiles}
 						uploadDir={this.uploadDir}
@@ -280,8 +274,8 @@ var App = React.createClass({
 					/>
 					<ItemInfo nav={state.nav} info={(state.nav.type.file) ? state.content.file : state.content.dir} />
 				</header>
-				<div id='header-pad' className='row' />
-				<section id='content-area' className='row scroll-area'>
+				<div id='header-pad' className='col-12' />
+				<section id='content-area' className='col-12 scroll-area'>
 					{view}
 				</section>
 			</main>
@@ -289,4 +283,4 @@ var App = React.createClass({
 	}
 });
 
-module.exports = App;
+module.exports = Browse;

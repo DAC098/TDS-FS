@@ -7,18 +7,18 @@ const URL = require('url');
 // npm modules
 const express = require('express');
 const co = require('co');
-const wrap = require('../coexp.js');
+const {wrap} = require('../middleware.js');
 
 // app modules
 const fsm = require('../fsm.js');
 const {htmlBody} = require('../html.js');
 const {getSalt,getHash} = require('../crypt.js');
-const {getNextID} = require('../uid.js');
+const {getID} = require('../uid.js');
 const db = require('../db.js');
 
 // log methods
-const log = logger.makeLog('cout',{name:'fs_router'});
-const error = logger.makeLog('cout',{name:'fs_router',prefix:'ERROR'});
+const log = logger.makeLog('cout',{name:'fs-rter'});
+const error = logger.makeLog('cout',{name:'fs-rter',prefix:'ERROR'});
 
 // ----------------------------------------------------------------------------
 // variables
@@ -49,7 +49,9 @@ function setSession(req,doc) {
 
 router.use((req,res,next) => {
 	if(settings.https.redirect && !req.secure) {
+
 		log('redirecting to secure server');
+
 		res.status(300).redirect(`https://${settings.https.host}:${settings.https.port}`);
 	} else {
 		next();
@@ -67,12 +69,14 @@ router.get('/',(req,res) => {
 router.get('/browse',(req,res) => {
 	try {
 		if(req.session.root) {
-			res.status(200).send(htmlBody('fs',{username:req.session.username}));
+			res.status(200).send(htmlBody('Browse',{username:req.session.username}));
 		} else {
 			res.status(300).redirect('/login');
 		}
 	} catch(err) {
+
 		error('failed to send browse page',err.message);
+
 		res.status(500).send('server error');
 	}
 });
@@ -80,12 +84,14 @@ router.get('/browse',(req,res) => {
 router.get('/login',(req,res) => {
 	try {
 		if(!req.session.root) {
-			res.status(200).send(htmlBody('login'));
+			res.status(200).send(htmlBody('Login'));
 		} else {
 			res.status(300).redirect('/browse');
 		}
 	} catch(err) {
+
 		error('failed to send login page',err.message);
+
 		res.status(500).send('server error');
 	}
 });
@@ -101,20 +107,28 @@ router.get('/retrieve/*',wrap(function* (req,res) {
 			let exists = yield fsm.checkExists(true,req.session.root,req.params[0]);
 			if(exists) {
 				let data = yield fsm.getFile(file_path);
+
 				log(`sending file to user
 	username:	${req.session.username}`);
+
 				res.status(200).send(data);
 			} else {
+
 				log(`unable to send file to user
 	username:	${req.session.username}`);
+
 				res.status(404).send('file not found'+req.params[0]);
 			}
 		} catch(err) {
+
 			error('failed to send download',err.message);
+
 			res.status(500).send('server error');
 		}
 	} else {
+
 		log('no root for given session');
+
 	}
 }));
 
@@ -131,25 +145,35 @@ router.post('/user/login',wrap(function* (req,res) {
 				let check = getHash(password,doc.salt);
 				if(check === doc.password) {
 					setSession(req,doc);
+
 					log(`login successful
 	username:	${doc.username}`);
+
 					res.status(200).json({url:'/browse'});
 				} else {
+
 					log(`login failed
 	reason:		invalid password`);
+
 					res.status(401).json({username:true,password:false});
 				}
 			} else {
+
 				log(`login failed
 	reason:		unknown username`);
+
 				res.status(400).json({username:false,password:false});
 			}
 		} catch(err) {
+
 			error('failed to login user',err.message);
+
 			res.status(500).json({msg:'unable to process login'});
 		}
 	} else {
+
 		log('request is non-xhr request');
+
 	}
 }));
 
@@ -162,7 +186,7 @@ router.post('/user/create',wrap(function* (req,res) {
 				if(password === confirm_password) {
 					let salt = getSalt();
 					let doc = {
-						_id: getNextID(),
+						_id: getID(),
 						username,
 						password: getHash(password,salt),
 						salt,
@@ -170,21 +194,29 @@ router.post('/user/create',wrap(function* (req,res) {
 					};
 					yield db.users.insert(doc);
 					setSession(req,doc);
+
 					log(`created new user
 	username:	${doc.username}`);
+
 					res.status(200).json({url:'/browse'});
 				} else {
+
 					log(`failed to create user
 	reason:		inconsistent password`);
+
 					res.status(409).json({password:false});
 				}
 			} else {
+
 				log(`failed to create user
 	reason:		username already exists`);
+
 				res.status(409).json({username:false});
 			}
 		} catch(err) {
+
 			error('failed to create user',err.message);
+
 			res.status(500).json({msg:'unable to create account'});
 		}
 	} else {

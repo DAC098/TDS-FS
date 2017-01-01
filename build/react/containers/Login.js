@@ -1,6 +1,8 @@
 var React = require('react');
 
-var log = require('../../client/CLogs.js').makeLog('Login');
+var logger = logger || require('../../client/CLogs.js');
+var log = logger.makeLog('cout',{name:'Login'});
+var error = logger.makeLog('cout',{name:'Login',prefix:'ERROR'});
 var {sendJSON} = require('../../client/xhr.js');
 
 var Login = React.createClass({
@@ -19,7 +21,9 @@ var Login = React.createClass({
             new_user: false
         };
     },
-    componentDidMount: function() {},
+    componentDidMount: function() {
+		log('login mounted');
+	},
     // ------------------------------------------------------------------------
     // state mutators
     // ------------------------------------------------------------------------
@@ -41,7 +45,7 @@ var Login = React.createClass({
         if(new_user) {
             let promise = sendJSON('/user/create',input);
             promise.then((data) => {
-                if(data.status === 300) {
+                if(data.status === 200) {
                     log('redirecting');
                     let url = JSON.parse(data.response).url;
                     let redirect = window.location.origin + url;
@@ -75,6 +79,7 @@ var Login = React.createClass({
     // ------------------------------------------------------------------------
     render: function() {
         let {input,display} = this.state;
+		log('rendering login');
         return (
             <main>
                 <div id='login' ref='login'>

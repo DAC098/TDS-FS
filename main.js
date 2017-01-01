@@ -3,6 +3,11 @@ global.reqRoot = function(path) {
 	return require(root + '/' + path);
 };
 
+global.reqLib = function(name) {
+	let root = process.cwd();
+	return require(root+'/lib/'+name+'/index.js');
+};
+
 process.env.NODE_ENV = 'development';
 
 let len = process.argv.length;
@@ -18,4 +23,7 @@ global.settings = require('./lib/SettingsManager/index.js')('./settings.json');
 
 global.logger = require('./server/logging.js');
 
-require('./server/server.js');
+const main_svr = require('./server/server.js')();
+
+main_svr.startHTTP();
+main_svr.startHTTPS();

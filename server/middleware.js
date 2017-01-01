@@ -1,6 +1,6 @@
 const co = require('co');
 
-module.exports = function wrap(gen) {
+exports.wrap = function wrap(gen) {
 
 	let fn = co.wrap(gen);
 
@@ -18,5 +18,5 @@ module.exports = function wrap(gen) {
 	return function(req,res,next) {
 		return fn(req,res,next).catch(next);
 	};
-	
+
 };

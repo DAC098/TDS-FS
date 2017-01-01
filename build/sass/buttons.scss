@@ -1,0 +1,33 @@
+.md-button {
+	margin: 6px 8px;
+	padding: 0px 16px;
+	height: 36px;
+	clear: both;
+	min-width: 64px;
+	border-radius: 2px;
+	font-size: 14px;
+	text-shadow: none;
+	outline: none;
+	border: none;
+
+	transition: 200ms;
+
+	&.flat {
+		box-shadow: none;
+		color: $blueA400;
+
+		&:hover:not([disabled]), &:focus:not([disabled]) {
+			background-color: $blueA400;
+			color: white;
+		}
+
+		&:disabled {
+			color: rgba(#000000, 0.26);
+		}
+	}
+
+	&.dense {
+		font-size: 13px;
+		height: 32px;
+	}
+}

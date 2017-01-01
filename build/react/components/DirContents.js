@@ -25,7 +25,7 @@ var DirContents = React.createClass({
     render: function() {
         var dir_empty = this.props.dir.length === 0;
         return (
-            <table>
+            <table className='md-table'>
                 <thead>
                     <tr>
                         <th>Name</th>
